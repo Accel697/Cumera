@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.provider.MediaStore
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -38,15 +40,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HelperTheme {
-                CameraApp()
+                MainScreen()
             }
         }
     }
 }
 
 @Composable
-fun CameraApp() {
+fun MainScreen() {
     val context = LocalContext.current
+
     var hasCameraPermission by remember { mutableStateOf(false) }
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -59,6 +62,17 @@ fun CameraApp() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    val launcherDialer = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // Обработка результата, если необходимо
+    }
+    val launcherContacts = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        // Обработка результата, если необходимо
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,10 +80,16 @@ fun CameraApp() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = {
-            openCamera(cameraLauncher, context)
-        }) {
+        Button(onClick = { openCamera(cameraLauncher, context) }) {
             Text("Открыть камеру")
+        }
+
+        Button(onClick = { openDialer(launcherDialer, context) }) {
+            Text("Открыть звонилку")
+        }
+
+        Button(onClick = { openContacts(launcherContacts, context) }) {
+            Text("Открыть контакты")
         }
     }
 }
@@ -77,4 +97,18 @@ fun CameraApp() {
 fun openCamera(cameraLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>, context: Context) {
     val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
     cameraLauncher.launch(takePictureIntent)
+}
+
+fun openDialer(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>, context: Context) {
+    val intent = Intent(Intent.ACTION_DIAL).apply {
+        data = Uri.parse("tel:+79991234567")
+    }
+    launcher.launch(intent)
+}
+
+fun openContacts(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>, context: Context) {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        type = ContactsContract.Contacts.CONTENT_TYPE
+    }
+    launcher.launch(intent)
 }
