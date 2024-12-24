@@ -1,0 +1,41 @@
+Index: app/src/main/java/com/example/helper/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.helper\r\n\r\nimport android.Manifest\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport android.content.pm.PackageManager\r\nimport android.net.Uri\r\nimport android.os.Bundle\r\nimport android.provider.ContactsContract\r\nimport android.provider.MediaStore\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.ManagedActivityResultLauncher\r\nimport androidx.activity.compose.rememberLauncherForActivityResult\r\nimport androidx.activity.compose.setContent\r\nimport androidx.activity.enableEdgeToEdge\r\nimport androidx.activity.result.ActivityResult\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.core.content.ContextCompat\r\nimport com.example.helper.ui.theme.HelperTheme\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        enableEdgeToEdge()\r\n        setContent {\r\n            HelperTheme {\r\n                MainScreen()\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun MainScreen() {\r\n    val context = LocalContext.current\r\n\r\n    var hasCameraPermission by remember { mutableStateOf(false) }\r\n    val cameraLauncher = rememberLauncherForActivityResult(\r\n        contract = ActivityResultContracts.StartActivityForResult()\r\n    ) { }\r\n\r\n    LaunchedEffect(Unit) {\r\n        hasCameraPermission = ContextCompat.checkSelfPermission(\r\n            context,\r\n            Manifest.permission.CAMERA\r\n        ) == PackageManager.PERMISSION_GRANTED\r\n    }\r\n\r\n    val launcherDialer = rememberLauncherForActivityResult(\r\n        contract = ActivityResultContracts.StartActivityForResult()\r\n    ) { result ->\r\n        // Обработка результата, если необходимо\r\n    }\r\n    val launcherContacts = rememberLauncherForActivityResult(\r\n        contract = ActivityResultContracts.StartActivityForResult()\r\n    ) { result ->\r\n        // Обработка результата, если необходимо\r\n    }\r\n\r\n    Column(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .padding(10.dp),\r\n        verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally\r\n    ) {\r\n        Button(onClick = { openCamera(cameraLauncher, context) }) {\r\n            Text(\"Открыть камеру\")\r\n        }\r\n\r\n        Button(onClick = { openDialer(launcherDialer, context) }) {\r\n            Text(\"Открыть звонилку\")\r\n        }\r\n\r\n        Button(onClick = { openContacts(launcherContacts, context) }) {\r\n            Text(\"Открыть контакты\")\r\n        }\r\n    }\r\n}\r\n\r\nfun openCamera(cameraLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>, context: Context) {\r\n    val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)\r\n    cameraLauncher.launch(takePictureIntent)\r\n}\r\n\r\nfun openDialer(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>, context: Context) {\r\n    val intent = Intent(Intent.ACTION_DIAL).apply {\r\n        data = Uri.parse(\"tel:+79991234567\")\r\n    }\r\n    launcher.launch(intent)\r\n}\r\n\r\nfun openContacts(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>, context: Context) {\r\n    val intent = Intent(Intent.ACTION_VIEW).apply {\r\n        type = ContactsContract.Contacts.CONTENT_TYPE\r\n    }\r\n    launcher.launch(intent)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/helper/MainActivity.kt b/app/src/main/java/com/example/helper/MainActivity.kt
+--- a/app/src/main/java/com/example/helper/MainActivity.kt	
++++ b/app/src/main/java/com/example/helper/MainActivity.kt	
+@@ -91,6 +91,15 @@
+         Button(onClick = { openContacts(launcherContacts, context) }) {
+             Text("Открыть контакты")
+         }
++
++        Button(onClick = {
++            val gmmIntentUri = Uri.parse("geo:0,0?q=")
++            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
++            mapIntent.setPackage("com.google.android.apps.maps")
++            context.startActivity(mapIntent)
++        }) {
++            Text("Открыть карту")
++        }
+     }
+ }
+ 
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"gradleJvm\" value=\"#GRADLE_LOCAL_JAVA_HOME\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n        <option name=\"resolveExternalAnnotations\" value=\"false\" />\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+--- a/.idea/gradle.xml	
++++ b/.idea/gradle.xml	
+@@ -1,5 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
+   <component name="GradleSettings">
+     <option name="linkedExternalProjectsSettings">
+       <GradleProjectSettings>
